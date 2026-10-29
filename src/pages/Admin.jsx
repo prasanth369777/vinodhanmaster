@@ -4,7 +4,7 @@ import { products as storeProducts } from "../data/products";
 import {
   LayoutDashboard, Package, FileText, Plus, Search, Pencil, Trash2,
   Eye, EyeOff, Save, X, ExternalLink, ShoppingBag, BookOpen, TrendingUp,
-  Image as ImageIcon, ChevronRight
+  Image as ImageIcon, ChevronRight, LockKeyhole, LogOut
 } from "lucide-react";
 
 const PRODUCTS_KEY = "vinodhan_admin_products_v1";
@@ -69,6 +69,31 @@ function TextArea(props) {
 }
 
 export default function Admin() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => sessionStorage.getItem("vinodhan_admin_authenticated") === "true");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+    if (username.trim() === "admin" && password === "bodi") {
+      sessionStorage.setItem("vinodhan_admin_authenticated", "true");
+      setIsAuthenticated(true);
+      setLoginError("");
+      setPassword("");
+    } else {
+      setLoginError("Incorrect username or password. Please try again.");
+    }
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("vinodhan_admin_authenticated");
+    setIsAuthenticated(false);
+    setUsername("");
+    setPassword("");
+    setSection("overview");
+  };
+
   const [section, setSection] = useState("overview");
   const [products, setProducts] = useState(() => {
     const stored = readStore(PRODUCTS_KEY, null);
@@ -158,6 +183,32 @@ export default function Admin() {
     { id: "blogs", label: "Blog posts", icon: FileText, count: blogs.length },
   ];
 
+  if (!isAuthenticated) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f5f6f1] px-4 py-10 font-['Poppins',sans-serif] text-[#203b2a]">
+        <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');`}</style>
+        <section className="w-full max-w-md overflow-hidden rounded-3xl border border-[#e5e7df] bg-white shadow-xl shadow-[#173d2b]/10">
+          <div className="bg-[#173d2b] px-8 py-9 text-center text-white">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#d7bd83] text-2xl font-bold text-[#173d2b]">V</div>
+            <p className="mt-4 text-xl font-semibold tracking-wide">VINODHAN</p>
+            <p className="mt-1 text-xs uppercase tracking-[.22em] text-white/60">Store admin portal</p>
+          </div>
+          <form onSubmit={handleLogin} className="p-7 sm:p-9">
+            <div className="mb-7 flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#edf2e9] text-[#31583c]"><LockKeyhole size={20} /></span>
+              <div><h1 className="text-xl font-semibold">Admin login</h1><p className="mt-1 text-xs text-[#7b8578]">Sign in to manage your store.</p></div>
+            </div>
+            <label className="mb-5 block"><span className="mb-2 block text-xs font-semibold text-[#52614f]">Username</span><input autoComplete="username" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter username" className="w-full rounded-xl border border-[#e2e5dc] px-4 py-3.5 text-sm outline-none transition focus:border-[#8b9b75] focus:ring-2 focus:ring-[#dfe7d8]" /></label>
+            <label className="mb-5 block"><span className="mb-2 block text-xs font-semibold text-[#52614f]">Password</span><input autoComplete="current-password" required type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" className="w-full rounded-xl border border-[#e2e5dc] px-4 py-3.5 text-sm outline-none transition focus:border-[#8b9b75] focus:ring-2 focus:ring-[#dfe7d8]" /></label>
+            {loginError && <p role="alert" className="mb-4 rounded-lg border border-red-100 bg-red-50 px-3 py-2.5 text-xs text-red-700">{loginError}</p>}
+            <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#203f2d] px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-[#2d563c]"><LockKeyhole size={16} /> Sign in</button>
+            <Link to="/" className="mt-5 block text-center text-xs font-medium text-[#7b8578] hover:text-[#203f2d]">Return to storefront</Link>
+          </form>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#f5f6f1] font-['Poppins',sans-serif] text-[#203b2a]">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');`}</style>
@@ -184,6 +235,7 @@ export default function Admin() {
             <div className="flex items-center gap-3">
               <div className="relative hidden sm:block"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8b9588]" /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search content..." className="w-52 rounded-lg border border-[#e5e7df] py-2.5 pl-9 pr-3 text-xs outline-none focus:border-[#8b9b75]" /></div>
               <Link to="/" className="inline-flex items-center gap-2 rounded-lg border border-[#e1e5dc] px-3 py-2.5 text-xs font-semibold hover:bg-[#f7f8f4]"><ExternalLink size={14} /> <span className="hidden sm:inline">View store</span></Link>
+              <button type="button" onClick={handleLogout} className="inline-flex items-center gap-2 rounded-lg border border-[#e1e5dc] px-3 py-2.5 text-xs font-semibold text-[#8b5148] hover:bg-[#fff0ed]"><LogOut size={14} /> <span className="hidden sm:inline">Logout</span></button>
             </div>
           </header>
 
