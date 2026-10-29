@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import {
   Search,
   ShoppingBag,
@@ -15,6 +15,7 @@ const links = [
   ["Collections", "/collections"],
   ["New Arrivals", "/new-arrivals"],
   ["Our Story", "/about"],
+  ["Courses", "/courses"],
 ];
 
 export default function Header({
@@ -24,6 +25,11 @@ export default function Header({
 }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,11 +43,23 @@ export default function Header({
   }, []);
 
   useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = open ? "hidden" : "";
 
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
   }, [open]);
 
   const closeMenu = () => setOpen(false);
@@ -364,11 +382,8 @@ export default function Header({
 
           .vh-mobile-panel {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: -1;
+            inset: 0;
+            z-index: 1101;
             display: block;
             padding: 0;
             background: rgba(13,27,19,.35);
@@ -385,6 +400,8 @@ export default function Header({
           }
 
           .vh-mobile-sheet {
+            position: relative;
+            z-index: 1;
             width: min(88%, 390px);
             height: 100%;
             padding: 25px 25px 34px;
