@@ -6,7 +6,7 @@ export default function WhatsApp() {
   ).replace(/\D/g, "");
 
   const message = encodeURIComponent(
-    "Hi NOVA, I have a question about your products."
+    "Hi, I have a question about your products."
   );
 
   return (
