@@ -442,7 +442,7 @@ export default function Home({
             <div className="absolute right-[8%] top-[12%] h-20 w-20 rounded-full border border-[#c4a66e]/60 sm:h-28 sm:w-28" />
 
             <img
-              src="../../src/images/vinomaster.webp"
+              src="../../public/images/vinomaster.webp"
               alt="Vinomaster — Vinodhan"
               fetchPriority="high"
               className="relative z-10 max-h-[340px] w-full max-w-[520px] object-contain drop-shadow-xl sm:max-h-[430px] lg:max-h-[540px]"
